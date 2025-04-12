@@ -81,7 +81,9 @@ const detailsLevel = {
   showPlanet: true,
   showBackroundStarts: true,
   showGameAreaImage: true,
-  showStarPlanetImages: true
+  showStarPlanetImages: true,
+  showBlurEffects: false,
+  showGrafics: false
 }
 
 const screenLayout = {
@@ -778,7 +780,7 @@ function drawGameArea() {
     return; // Skip drawing if planet is undefined
   }
 
-  if (detailsLevel.showGameAreaImage) {
+  if (detailsLevel.showGrafics) {
     let cropX = me.xGlobal;
     let cropY = me.yGlobal;
 
