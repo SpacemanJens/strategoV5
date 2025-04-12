@@ -451,7 +451,7 @@ function drawGameInProgress() {
 
   if (!meHost && partyIsHost()) {
     meHost = true;
-    //  updateTowerCount();
+    updateTowerCount();
   }
 
   // Make sure me.planetIndex is valid and in range
