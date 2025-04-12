@@ -447,7 +447,7 @@ function draw() {
 function drawGameInProgress() {
 
   // Debug loading status every 60 frames
-  // JENSK Out commented while developing
+  // JENSK Out commented while developing.
 
   if (!meHost && partyIsHost()) {
     meHost = true;
