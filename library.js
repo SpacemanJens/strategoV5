@@ -128,6 +128,7 @@ class Spacecraft {
     drawScore(offSetY) {
       if (this.planetIndex < 0) { return; }
       fill(this.color);
+//      fill('red')
       let playerHits = 0;
       for (let i = 0; i < this.hits.length; i++) {
         if (i != this.playerNumber) {

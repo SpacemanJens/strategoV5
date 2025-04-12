@@ -88,7 +88,7 @@ const screenLayout = {
   screenWidth: 2400, // 2400
   screenHeight: 1200, // 1200
   startPlanetIndex: 0,
-  diameterPlanet: 3000, //3838,  // 1500/3838 Must be the same as the actual size of the background image found in preload()
+  diameterPlanet: 3000, //3838,  // 1500/3838 Must be the same as the actual size of the background image found in hit)
   cropWidth: 1200, // 1800
   cropHeight: 700, // 1200
   xGameArea: 600,
@@ -228,6 +228,7 @@ function onLocalScreenArea(xLocal, yLocal) {
 }
 
 function updateTowerCount() {
+  console.log("Updating tower count to:", shared.canonTowerCount);
   gameObjects = generateTowers(shared.canonTowerCount);
   // Set planetIndex to 3 for all towers
   shared.gameObjects = gameObjects.map(tower => ({
@@ -275,7 +276,7 @@ function generateTowers(count) {
 }
 
 function preload() {
-  partyConnect("wss://p5js-spaceman-server-29f6636dfb6c.herokuapp.com", "jkv-stategoV5");
+  partyConnect("wss://p5js-spaceman-server-29f6636dfb6c.herokuapp.com", "jkv-stategoV5a");
 
   shared = partyLoadShared("shared", {
     gameObjects: [],  // Start with empty array
@@ -356,24 +357,28 @@ function getPlanetColorScheme(planetIndex) {
 function draw() {
   background(220);
 
+  let ll = shared.gameObjects.length;
+  console.log("Number of canon towers:", ll);
   // --- Host Logic ---
-//  if (partyIsHost()) {
-//    handleHostDuties(); 
-//  }
+  //  if (partyIsHost()) {
+  //    handleHostDuties(); 
+  //  }
 
   switch (shared.gameState) {
     case "GAME-SETUP":
       drawGameInProgress()
+      push()
       drawGameSetup()
+      pop()
       break;
     case "IN-GAME":
       drawGameInProgress()
 
 
-//      drawInGame();
-//      if (me.status !== 'inBattle') {
-//        handleMovement();
-//      }
+      //      drawInGame();
+      //      if (me.status !== 'inBattle') {
+      //        handleMovement();
+      //      }
 
       //      updateGameState();
       //      validateGameState();
@@ -386,56 +391,56 @@ function draw() {
       //     showGameOverMessage();
       break;
   }
-/*
-  console.log("Game State:", shared.gameState);
-  fill(255);
-  circle(600, 600, 20);
-  // Draw Game Area Boundary
-  stroke(150);
-  noFill();
-  rect(GAME_AREA_X, GAME_AREA_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT);
-  noStroke();
-
-  // --- Draw Player Info in Lower Left ---
-  const infoX = 20;
-  const infoStartY = SCREEN_HEIGHT - 100;
-  const infoLineHeight = 20;
-  let currentY = infoStartY;
-
-  fill(255);
-  textSize(14);
-  textAlign(LEFT, TOP);
-
-  text(`Players: ${activeSpacecrafts.length}`, infoX, currentY);
-  currentY += infoLineHeight;
-
-  text(`My Status: ${me.status}`, infoX, currentY);
-  currentY += infoLineHeight;
-
-  text(`Game State: ${shared.gameState}`, infoX, currentY);
-  currentY += infoLineHeight;
- 
-  if (partyIsHost()) {
-    fill(255, 223, 0);
-    textSize(16);
-    text("HOST", infoX, currentY);
+  /*
+    console.log("Game State:", shared.gameState);
+    fill(255);
+    circle(600, 600, 20);
+    // Draw Game Area Boundary
+    stroke(150);
+    noFill();
+    rect(GAME_AREA_X, GAME_AREA_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT);
+    noStroke();
+  
+    // --- Draw Player Info in Lower Left ---
+    const infoX = 20;
+    const infoStartY = SCREEN_HEIGHT - 100;
+    const infoLineHeight = 20;
+    let currentY = infoStartY;
+  
     fill(255);
     textSize(14);
-  }
-  // --- End Player Info ---
-
-  // --- Draw Status Messages Above Game Area ---
-  const statusMsgX = GAME_AREA_X + GAME_AREA_WIDTH / 2;
-  const statusMsgY = GAME_AREA_Y - 30;
-
-  if (me.status === 'inBattle' && me.battleOutcome.result !== 'pending') {
-    fill(255, 255, 0);
-    textAlign(CENTER, CENTER);
-    textSize(20);
-    let outcomeMsg = `Battle vs ${me.battleOutcome.opponentInfo?.name || '??'}: ${me.battleOutcome.result.toUpperCase()}! Click anywhere to continue...`;
-    text(outcomeMsg, statusMsgX, statusMsgY);
-  }
-    */
+    textAlign(LEFT, TOP);
+  
+    text(`Players: ${activeSpacecrafts.length}`, infoX, currentY);
+    currentY += infoLineHeight;
+  
+    text(`My Status: ${me.status}`, infoX, currentY);
+    currentY += infoLineHeight;
+  
+    text(`Game State: ${shared.gameState}`, infoX, currentY);
+    currentY += infoLineHeight;
+   
+    if (partyIsHost()) {
+      fill(255, 223, 0);
+      textSize(16);
+      text("HOST", infoX, currentY);
+      fill(255);
+      textSize(14);
+    }
+    // --- End Player Info ---
+  
+    // --- Draw Status Messages Above Game Area ---
+    const statusMsgX = GAME_AREA_X + GAME_AREA_WIDTH / 2;
+    const statusMsgY = GAME_AREA_Y - 30;
+  
+    if (me.status === 'inBattle' && me.battleOutcome.result !== 'pending') {
+      fill(255, 255, 0);
+      textAlign(CENTER, CENTER);
+      textSize(20);
+      let outcomeMsg = `Battle vs ${me.battleOutcome.opponentInfo?.name || '??'}: ${me.battleOutcome.result.toUpperCase()}! Click anywhere to continue...`;
+      text(outcomeMsg, statusMsgX, statusMsgY);
+    }
+      */
 }
 
 
@@ -444,18 +449,9 @@ function drawGameInProgress() {
   // Debug loading status every 60 frames
   // JENSK Out commented while developing
 
-  debugFrameCount++;
-  if (debugFrameCount >= 60) {
-    debugFrameCount = 0;
-    if (!animationReady) {
-      console.log(`Still loading: ${imagesLoaded}/${totalExpectedImages} (${Math.floor(imagesLoaded / totalExpectedImages * 100)}%)`);
-    }
-  }
-
-
   if (!meHost && partyIsHost()) {
     meHost = true;
-    updateTowerCount();
+    //  updateTowerCount();
   }
 
   // Make sure me.planetIndex is valid and in range
@@ -521,7 +517,7 @@ function drawGameInProgress() {
   }
 
   // Draw Canon Towers for all players - only on planet 3
-  if (me.planetIndex === 3) {
+  if (me.planetIndex === 0) {
     gameObjects.forEach(canon => {
       canon.drawCanonTower();
       canon.drawBullets();
@@ -532,7 +528,7 @@ function drawGameInProgress() {
   let offSetY = 500;
   if (partyIsHost()) {
     fill('gray')
-    text("Host", 20, offSetY);
+    text("Host2", 20, offSetY);
     offSetY += 20
   }
   textSize(18);
@@ -557,7 +553,7 @@ function drawGameInProgress() {
   });
 
   // Count visible bullets from canons - only if on planet 3
-  if (me.planetIndex === 3) {
+  if (me.planetIndex === 0) {
     gameObjects.forEach(canon => {
       numberOfBullets += canon.bullets.length;
       // Count visible bullets
@@ -611,7 +607,7 @@ function drawGameInProgress() {
 }
 
 function keyPressed() {
-
+  console.log("Key pressed:", keyCode);
   if (keyCode === 49) { // 1
     me.planetIndex = 0;
     // me.xGlobal = star
@@ -685,20 +681,25 @@ function keyPressed() {
 
 function performHostAction() {
   // Only process canon logic if on planet 3
-  if (me.planetIndex === 3) {
+  if (me.planetIndex === 0) {
+    let ll = shared.gameObjects.length;
+    console.log("Number of canon towers3:", ll);
     gameObjects.forEach((canon, index) => {
       canon.move();
 
       const currentTime = millis();
       const selectedInterval = shared.canonTowerShootingInterval;
       // Check if selectedInterval is a valid number
+      console.log("Selected shooting interva2:", selectedInterval);
       if (typeof selectedInterval === 'number') {
+        console.log("Selected shooting interval:", selectedInterval);
         if (currentTime - canon.lastShotTime > selectedInterval) {
           if (activeSpacecrafts.length > 0) {
             // Only target spacecrafts that are on planet 3
-            const spacecraftsOnPlanet3 = activeSpacecrafts.filter(f => f.planetIndex === 3);
+            const spacecraftsOnPlanet3 = activeSpacecrafts.filter(f => f.planetIndex === 0);
             if (spacecraftsOnPlanet3.length > 0) {
               const nearestSpacecraft = canon.findNearestSpacecraft(spacecraftsOnPlanet3);
+              //              const nearestSpacecraft = canon.findNearestSpacecraft(activeSpacecrafts);
 
               if (nearestSpacecraft) {
                 canon.shoot(nearestSpacecraft);
@@ -1276,7 +1277,7 @@ function createSpacecrafts() {
       characterId: null,
       characterRank: null,
       characterName: null,
-      characterInstanceId: null, 
+      characterInstanceId: null,
       x: -1000,
       y: -1000,
       size: SPACECRAFT_SIZE,
